@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
+    "aiofiles>=24.1.0",
     "colpali-engine>=0.3.2",
     "dashscope>=1.22.2",
     "datasets>=3.5.0",
