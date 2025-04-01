@@ -107,7 +107,8 @@ class LLM:
                         }
                     )
             completion = self.model.chat.completions.create(
-                model="gpt-4o", messages=[{"role": "user", "content": content}]
+                model="Qwen/Qwen2.5-VL-72B-Instruct",
+                messages=[{"role": "user", "content": content}],
             )
             return completion.choices[0].message.content
 
