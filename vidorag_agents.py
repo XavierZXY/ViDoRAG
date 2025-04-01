@@ -272,7 +272,7 @@ class ViDoRAG_Agents:
 if __name__ == "__main__":
     from llms.llm import LLM
 
-    vlm = LLM("Qwen2.5-VL-7B-Instruct")
+    vlm = LLM("Pro/Qwen/Qwen2.5-VL-7B-Instruct")
     agent = ViDoRAG_Agents(vlm)
     re = agent.run_agent(
         query="Who is Tim?",

@@ -2,11 +2,12 @@
 set -e
 export CUDA_VISIBLE_DEVICES=6,7
 # set the openai api url
-export OPENAI_API_BASE="https://api.siliconflow.cn/v1/chat/completions"
+export OPENAI_API_BASE="https://api.siliconflow.cn/v1"
+export OPENAI_API_BASE_LOCAL="http://0.0.0.0:9091/v1"
 # set the openai api key
 export OPENAI_API_KEY="sk-rqzxntebrwnivaauwwpubxuvrtjodcukaumwggtwymzvdfcw"
 python eval.py \
-  --experiment_type retrieval_infer \
+  --experiment_type vidorag \
   --dataset ViDoSeek  \
   --query_file vidoseek.json \
   --embed_model_name vidore/colqwen2-v1.0 \

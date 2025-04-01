@@ -1,10 +1,12 @@
 import base64
+import io
 import os
 import sys
 from io import BytesIO
 from pathlib import Path
 
 import torch
+from openai import OpenAI
 from PIL import Image
 
 
@@ -75,15 +77,20 @@ class Qwen_VL_2_5:
 class LLM:
     def __init__(self, model_name):
         self.model_name = model_name
-        if "Qwen2.5-VL" in self.model_name:
-            model_name = (
-                "/home/zxy/.cache/modelscope/hub/Qwen/Qwen2.5-VL-7B-Instruct"
-            )
-            self.model = Qwen_VL_2_5(model_name)
+        # self.openai_api_base = os.getenv("OPENAI_API_BASE")
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        if "Qwen2.5-VL-7B-Instruct" == self.model_name:
+            # get the local openai api base
+            self.openai_api_base = os.getenv("OPENAI_API_BASE_LOCAL")
         elif model_name.startswith("gpt"):
-            from openai import OpenAI
-
-            self.model = OpenAI()
+            self.model_name = "Qwen/Qwen2.5-VL-72B-Instruct"
+            self.openai_api_base = os.getenv("OPENAI_API_BASE")
+        else:
+            self.openai_api_base = os.getenv("OPENAI_API_BASE")
+        self.model = OpenAI(
+            base_url=self.openai_api_base,
+            api_key=self.openai_api_key,
+        )
 
     def generate(self, **kwargs):
         query = kwargs.get("query", "")
@@ -91,7 +98,24 @@ class LLM:
         model_name = kwargs.get("model_name", "")
 
         if "Qwen2.5-VL" in self.model_name:
-            return self.model.generate(query, image)
+            content = [{"type": "text", "text": query}]
+            if image != "":
+                # filepaths = [Path(img).resolve().as_posix() for img in image]
+                for img in image:
+                    base64_image = _encode_image(img)
+                    content.append(
+                        {
+                            "type": "image_url",
+                            "image_url": {
+                                "url": f"data:image/jpeg;base64,{base64_image}"
+                            },
+                        }
+                    )
+            completion = self.model.chat.completions.create(
+                model=self.model_name,
+                messages=[{"role": "user", "content": content}],
+            )
+            return completion.choices[0].message.content
         elif self.model_name.startswith("gpt"):
             content = [{"type": "text", "text": query}]
             if image != "":
@@ -107,7 +131,7 @@ class LLM:
                         }
                     )
             completion = self.model.chat.completions.create(
-                model="Qwen/Qwen2.5-VL-72B-Instruct",
+                model=self.model_name,
                 messages=[{"role": "user", "content": content}],
             )
             return completion.choices[0].message.content
