@@ -1,25 +1,24 @@
-from typing import Optional, List, Mapping, Any, Dict
 import json
-from tqdm import tqdm
 import os
-import torch
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import numpy as np
-from sklearn.mixture import GaussianMixture
+from typing import Any, Dict, List, Mapping, Optional
 
-from llama_index.core import Settings
-from llama_index.core.query_engine import RetrieverQueryEngine
+import numpy as np
+import torch
+from llama_index.core import Settings, StorageContext, VectorStoreIndex
 from llama_index.core.indices.query.schema import QueryBundle
+from llama_index.core.query_engine import RetrieverQueryEngine
 from llama_index.core.schema import (
-    NodeWithScore,
     BaseNode,
-    MetadataMode,
-    IndexNode,
     ImageNode,
+    IndexNode,
+    MetadataMode,
+    NodeWithScore,
     TextNode,
 )
-from llama_index.core import VectorStoreIndex, StorageContext
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+from sklearn.mixture import GaussianMixture
+from tqdm import tqdm
 
 from llms.vl_embedding import VL_Embedding
 from utils.format_converter import nodefile2node, nodes2dict
@@ -513,10 +512,11 @@ class HybridSearchEngine:
 
 
 if __name__ == "__main__":
-    datasets = ["ExampleDataset"]
+    datasets = ["ExampleDataset", "SlideVQA", "ViDoSeek"]
     for dataset in datasets:
         # search_engine = SearchEngine(dataset,node_dir_prefix='visrag_ingestion',embed_model_name='openbmb/VisRAG-Ret')
         # search_engine = SearchEngine(dataset,node_dir_prefix='nv_ingestion',embed_model_name='nvidia/NV-Embed-v2')
         search_engine = HybridSearchEngine(dataset, gmm=True)
-        search_engine.search("ok")
+        res = search_engine.search("who are u")
+        # print(res)
         # import pdb;pdb.set_trace()
