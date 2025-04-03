@@ -4,6 +4,7 @@ import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+import rich
 from llama_index.core.schema import ImageNode, NodeWithScore
 from tqdm import tqdm
 
@@ -86,7 +87,7 @@ class MMRAG:
 
     def vidorag(self, sample):
         query = sample["query"]
-        print(query)
+        rich.print(f"[green] The query is: \n {query} [/green]")
         recall_results = self.search_engine.search(query)
         candidate_image = [
             os.path.join(
@@ -104,7 +105,7 @@ class MMRAG:
         try:
             answer = self.agents.run_agent(query, candidate_image)
         except Exception as e:
-            print(e)
+            rich.print(f"[red] {e} [/red]")
             return None
 
         sample["eval_result"] = self.evaluator.evaluate(

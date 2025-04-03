@@ -80,6 +80,7 @@ class Ingestion:
     def ingestion_example(self, input_file, output_file):
         # image
         if input_file.endswith(".jpg") or input_file.endswith(".png"):
+            # TODO: time flag
             documents = self.reader.load_file(
                 Path(input_file),
                 self.reader.file_metadata,

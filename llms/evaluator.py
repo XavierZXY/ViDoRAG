@@ -1,7 +1,8 @@
-from collections import Counter
 import re
-import sys 
-# sys.path.append(".") 
+import sys
+from collections import Counter
+
+# sys.path.append(".")
 from .llm import LLM
 
 DEFAULT_SYSTEM_TEMPLATE = """System:
@@ -40,24 +41,25 @@ User:
 {generated_answer}
 """
 
+
 class Evaluator:
     def __init__(self):
-        self.llm = LLM("gpt-4o")
+        self.llm = LLM("Qwen/Qwen2.5-72B-Instruct")
         self.system_template = DEFAULT_SYSTEM_TEMPLATE
-        
+
     def llm_eval(self, query, reference_answer, generated_answer):
         system_prompt = self.system_template.format(
             query=query,
             reference_answer=reference_answer,
-            generated_answer=generated_answer
+            generated_answer=generated_answer,
         )
         try_times = 10
         while True:
             try:
                 judge = self.llm.generate(query=system_prompt)
-                match = re.search(r'\d', judge)
+                match = re.search(r"\d", judge)
                 if match:
-                    score =  int(match.group(0))
+                    score = int(match.group(0))
                     if score >= 4:
                         passing = 1
                     else:
@@ -67,27 +69,26 @@ class Evaluator:
                 print(e)
                 continue
         return score, passing, judge
-    
+
     def evaluate(self, query, reference_answer, generated_answer):
         system_prompt = self.system_template.format(
             query=query,
             reference_answer=reference_answer,
-            generated_answer=generated_answer
+            generated_answer=generated_answer,
         )
-        score, passing, judge = self.llm_eval(query, reference_answer, generated_answer)
-        result = dict(
-            score=score,
-            passing=passing,
-            judge=judge
+        score, passing, judge = self.llm_eval(
+            query, reference_answer, generated_answer
         )
+        result = dict(score=score, passing=passing, judge=judge)
         return result
 
 
-    
-if __name__ == '__main__':
+if __name__ == "__main__":
     evaluator = Evaluator()
     query = "What is the capital of France?"
     reference_answer = "The capital of France is Paris."
     generated_answer = "Paris is the capital of France."
-    score, passing, judge = evaluator.llm_eval(query, reference_answer, generated_answer)
+    score, passing, judge = evaluator.llm_eval(
+        query, reference_answer, generated_answer
+    )
     print(score, passing, judge)

@@ -2,6 +2,7 @@ import json
 import os
 import sys
 
+import rich
 from PIL import Image
 
 from agent.agent_prompt import answer_prompt, inspector_prompt, seeker_prompt
@@ -56,12 +57,14 @@ class Seeker:
         while True:
             if times > 2:
                 # return None, None, None
-                raise Exception("seeker time out")
+                raise Exception("ERROR************ seeker time out")
             times += 1
             select_response = self.vlm.generate(
                 query=prompt, image=input_images
             )
-            print(select_response)
+            rich.print(
+                "[green] Seeker select_response:\n {select_response} [/green]"
+            )
             try:
                 select_response_json = extract_json(select_response)
                 reason = select_response_json.get("reason", None)
@@ -92,8 +95,7 @@ class Seeker:
 
             except Exception as e:
                 print(e)
-                print(select_response)
-                print("seeker")
+                rich.print("[red] Seeker ERROR \n {select_response} [/red]")
                 continue
             break
 
@@ -272,7 +274,7 @@ class ViDoRAG_Agents:
 if __name__ == "__main__":
     from llms.llm import LLM
 
-    vlm = LLM("Pro/Qwen/Qwen2.5-VL-7B-Instruct")
+    vlm = LLM("Qwen2.5-VL-7B-Instruct-AWQ")
     agent = ViDoRAG_Agents(vlm)
     re = agent.run_agent(
         query="Who is Tim?",

@@ -79,7 +79,10 @@ class LLM:
         self.model_name = model_name
         # self.openai_api_base = os.getenv("OPENAI_API_BASE")
         self.openai_api_key = os.getenv("OPENAI_API_KEY")
-        if "Qwen2.5-VL-7B-Instruct" == self.model_name:
+        if (
+            "Qwen2.5-VL-7B-Instruct" == self.model_name
+            or "Qwen2.5-VL-7B-Instruct-AWQ" == self.model_name
+        ):
             # get the local openai api base
             self.openai_api_base = os.getenv("OPENAI_API_BASE_LOCAL")
         elif model_name.startswith("gpt"):
