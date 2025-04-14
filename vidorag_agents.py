@@ -220,7 +220,9 @@ class Synthesizer:
             final_answer_response = self.vlm.generate(
                 query=prompt, image=input_images
             )
-            print(final_answer_response)
+            rich.print(
+                f"[green] The final answer response is:\n {final_answer_response} [/green]"
+            )
             try:
                 final_answer_response_json = extract_json(final_answer_response)
                 reason = final_answer_response_json.get("reason", None)
